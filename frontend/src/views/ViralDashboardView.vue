@@ -13,7 +13,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import ViralDashboard from '../components/ViralDashboard.vue'
-import axios from 'axios'
+import { getCascadeData, injectPost, applyTuning, applyPreset } from '../api/viral'
 
 const props = defineProps({
   simulationId: {
@@ -21,8 +21,6 @@ const props = defineProps({
     required: true
   }
 })
-
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
 
 const cascadeData = ref({
   global_r0: 0,
@@ -37,9 +35,9 @@ let pollTimer = null
 
 const fetchCascadeData = async () => {
   try {
-    const res = await axios.get(`${API_BASE}/api/viral/cascades/${props.simulationId}`)
-    if (res.data) {
-      cascadeData.value = res.data
+    const res = await getCascadeData(props.simulationId)
+    if (res) {
+      cascadeData.value = res
     }
   } catch (err) {
     console.warn('Failed to fetch cascade data:', err.message)
@@ -48,7 +46,7 @@ const fetchCascadeData = async () => {
 
 const handleInjectPost = async (payload) => {
   try {
-    await axios.post(`${API_BASE}/api/viral/inject`, {
+    await injectPost({
       simulation_id: props.simulationId,
       ...payload,
     })
@@ -59,7 +57,7 @@ const handleInjectPost = async (payload) => {
 
 const handleApplyTuning = async (payload) => {
   try {
-    await axios.post(`${API_BASE}/api/viral/tuning`, {
+    await applyTuning({
       simulation_id: props.simulationId,
       ...payload,
     })
@@ -70,7 +68,7 @@ const handleApplyTuning = async (payload) => {
 
 const handleApplyPreset = async (payload) => {
   try {
-    await axios.post(`${API_BASE}/api/viral/preset`, {
+    await applyPreset({
       simulation_id: props.simulationId,
       ...payload,
     })
