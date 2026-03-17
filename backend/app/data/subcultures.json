@@ -1,0 +1,129 @@
+{
+  "crypto_twitter": {
+    "name": "Crypto Twitter",
+    "description": "High-conviction traders, DeFi degens, NFT collectors, and Web3 evangelists. Prone to FOMO cascades and FUD spirals.",
+    "archetype_distribution": {
+      "Skeptical": 0.10,
+      "Aggressive": 0.10,
+      "Helpful": 0.10,
+      "Opportunistic": 0.25,
+      "Neutral": 0.15,
+      "Contrarian": 0.10,
+      "Amplifier": 0.20
+    },
+    "susceptibility_range": [0.35, 0.90],
+    "reach_distribution": "power_law",
+    "reach_exponent": 2.5,
+    "avg_follower_count": 800,
+    "follower_count_range": [50, 500000],
+    "age_range": [18, 45],
+    "gender_ratio": {"male": 0.72, "female": 0.25, "other": 0.03},
+    "countries": ["US", "UK", "Singapore", "Dubai", "Germany", "Japan", "South Korea", "Nigeria", "Brazil", "India"],
+    "professions": [
+      "Crypto Trader", "DeFi Developer", "NFT Artist", "Blockchain Researcher",
+      "Venture Capital Analyst", "Community Manager", "Protocol Engineer",
+      "Influencer", "Day Trader", "Token Economist", "Student", "Freelancer"
+    ],
+    "topics": [
+      "Bitcoin", "Ethereum", "DeFi", "NFTs", "altcoins", "Web3",
+      "trading", "staking", "yield farming", "airdrops", "regulation",
+      "memecoins", "Layer 2", "DAOs", "smart contracts"
+    ]
+  },
+
+  "political_junkies": {
+    "name": "Political Junkies",
+    "description": "Politically engaged users spanning the spectrum. Highly opinionated, prone to tribal amplification and hostile quote-tweeting.",
+    "archetype_distribution": {
+      "Skeptical": 0.15,
+      "Aggressive": 0.20,
+      "Helpful": 0.05,
+      "Opportunistic": 0.10,
+      "Neutral": 0.10,
+      "Contrarian": 0.25,
+      "Amplifier": 0.15
+    },
+    "susceptibility_range": [0.20, 0.85],
+    "reach_distribution": "power_law",
+    "reach_exponent": 2.2,
+    "avg_follower_count": 1200,
+    "follower_count_range": [20, 2000000],
+    "age_range": [22, 65],
+    "gender_ratio": {"male": 0.60, "female": 0.37, "other": 0.03},
+    "countries": ["US", "UK", "Canada", "Australia", "Germany", "France", "India", "Brazil"],
+    "professions": [
+      "Journalist", "Political Analyst", "Campaign Strategist", "Policy Researcher",
+      "Activist", "Lawyer", "Professor", "Government Employee", "Blogger",
+      "Podcaster", "Student", "Retired", "Business Owner"
+    ],
+    "topics": [
+      "elections", "policy", "immigration", "economy", "healthcare",
+      "climate change", "gun control", "education", "foreign policy",
+      "Supreme Court", "taxes", "media bias", "free speech", "inequality"
+    ]
+  },
+
+  "gen_z_gamers": {
+    "name": "Gen-Z Gamers",
+    "description": "Young, meme-literate gamers with short attention spans and high engagement velocity. Trend-followers with strong community loyalty.",
+    "archetype_distribution": {
+      "Skeptical": 0.05,
+      "Aggressive": 0.10,
+      "Helpful": 0.20,
+      "Opportunistic": 0.15,
+      "Neutral": 0.25,
+      "Contrarian": 0.05,
+      "Amplifier": 0.20
+    },
+    "susceptibility_range": [0.40, 0.95],
+    "reach_distribution": "power_law",
+    "reach_exponent": 2.8,
+    "avg_follower_count": 400,
+    "follower_count_range": [10, 1000000],
+    "age_range": [14, 27],
+    "gender_ratio": {"male": 0.62, "female": 0.32, "other": 0.06},
+    "countries": ["US", "UK", "Japan", "South Korea", "Brazil", "Germany", "France", "Australia", "Canada", "India"],
+    "professions": [
+      "Student", "Streamer", "Content Creator", "Esports Player",
+      "Game Developer", "Community Moderator", "Retail Worker",
+      "Freelance Artist", "College Student", "Intern"
+    ],
+    "topics": [
+      "gaming", "Twitch", "YouTube", "memes", "anime", "esports",
+      "indie games", "PC builds", "game reviews", "Discord",
+      "speedrunning", "cosplay", "game development", "VR"
+    ]
+  },
+
+  "default": {
+    "name": "General Social Media",
+    "description": "A balanced cross-section of social media users. Mixed demographics and engagement patterns.",
+    "archetype_distribution": {
+      "Skeptical": 0.15,
+      "Aggressive": 0.10,
+      "Helpful": 0.15,
+      "Opportunistic": 0.10,
+      "Neutral": 0.30,
+      "Contrarian": 0.10,
+      "Amplifier": 0.10
+    },
+    "susceptibility_range": [0.15, 0.85],
+    "reach_distribution": "power_law",
+    "reach_exponent": 2.3,
+    "avg_follower_count": 500,
+    "follower_count_range": [10, 1000000],
+    "age_range": [16, 65],
+    "gender_ratio": {"male": 0.50, "female": 0.47, "other": 0.03},
+    "countries": ["US", "UK", "China", "India", "Brazil", "Germany", "France", "Japan", "Canada", "Australia", "South Korea"],
+    "professions": [
+      "Software Engineer", "Teacher", "Student", "Journalist", "Manager",
+      "Doctor", "Nurse", "Lawyer", "Artist", "Freelancer", "Business Owner",
+      "Retail Worker", "Government Employee", "Researcher", "Marketing Professional"
+    ],
+    "topics": [
+      "technology", "sports", "entertainment", "politics", "business",
+      "health", "education", "environment", "travel", "food",
+      "music", "movies", "books", "fitness", "science"
+    ]
+  }
+}

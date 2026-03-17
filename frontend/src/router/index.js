@@ -5,6 +5,7 @@ import SimulationView from '../views/SimulationView.vue'
 import SimulationRunView from '../views/SimulationRunView.vue'
 import ReportView from '../views/ReportView.vue'
 import InteractionView from '../views/InteractionView.vue'
+import ViralDashboardView from '../views/ViralDashboardView.vue'
 
 const routes = [
   {
@@ -41,6 +42,12 @@ const routes = [
     name: 'Interaction',
     component: InteractionView,
     props: true
+  },
+  {
+    path: '/viral/:simulationId',
+    name: 'ViralDashboard',
+    component: ViralDashboardView,
+    props: true
   }
 ]
 
@@ -50,3 +57,4 @@ const router = createRouter({
 })
 
 export default router
+

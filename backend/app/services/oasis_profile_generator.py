@@ -2,6 +2,11 @@
 OASIS Agent Profile生成器
 将Zep图谱中的实体转换为OASIS模拟平台所需的Agent Profile格式
 
+Viral extensions:
+- susceptibility_score: How likely the agent is to amplify unverified claims (0.0-1.0)
+- reach_score: Normalized follower influence (0.0-1.0, power-law distribution)
+- vibe_profile: Behavioral archetype driving cascade behavior
+
 优化改进：
 1. 调用Zep检索功能二次丰富节点信息
 2. 优化提示词生成非常详细的人设
@@ -23,6 +28,18 @@ from ..utils.logger import get_logger
 from .zep_entity_reader import EntityNode, ZepEntityReader
 
 logger = get_logger('mirofish.oasis_profile')
+
+
+# Valid vibe profile archetypes for cascade simulation
+VIBE_PROFILES = [
+    "Skeptical",      # Questions claims, fact-checks, slows cascades
+    "Aggressive",     # Attacks sources, amplifies outrage
+    "Helpful",        # Shares context, tries to inform
+    "Opportunistic",  # Jumps on trends for clout, amplifies virality
+    "Neutral",        # Occasional engager, low amplification
+    "Contrarian",     # Pushes back against popular narratives
+    "Amplifier",      # Retweets/reposts everything trending
+]
 
 
 @dataclass
@@ -51,6 +68,11 @@ class OasisAgentProfile:
     profession: Optional[str] = None
     interested_topics: List[str] = field(default_factory=list)
     
+    # --- Viral: cascade-simulation attributes ---
+    susceptibility_score: float = 0.5  # 0.0-1.0: likelihood to amplify unverified claims
+    reach_score: float = 0.1           # 0.0-1.0: normalized follower influence
+    vibe_profile: str = "Neutral"      # Behavioral archetype (see VIBE_PROFILES)
+    
     # 来源实体信息
     source_entity_uuid: Optional[str] = None
     source_entity_type: Optional[str] = None
@@ -67,6 +89,10 @@ class OasisAgentProfile:
             "persona": self.persona,
             "karma": self.karma,
             "created_at": self.created_at,
+            # Viral cascade attributes
+            "susceptibility_score": self.susceptibility_score,
+            "reach_score": self.reach_score,
+            "vibe_profile": self.vibe_profile,
         }
         
         # 添加额外人设信息（如果有）
@@ -97,6 +123,10 @@ class OasisAgentProfile:
             "follower_count": self.follower_count,
             "statuses_count": self.statuses_count,
             "created_at": self.created_at,
+            # Viral cascade attributes
+            "susceptibility_score": self.susceptibility_score,
+            "reach_score": self.reach_score,
+            "vibe_profile": self.vibe_profile,
         }
         
         # 添加额外人设信息
@@ -133,6 +163,10 @@ class OasisAgentProfile:
             "country": self.country,
             "profession": self.profession,
             "interested_topics": self.interested_topics,
+            # Viral cascade attributes
+            "susceptibility_score": self.susceptibility_score,
+            "reach_score": self.reach_score,
+            "vibe_profile": self.vibe_profile,
             "source_entity_uuid": self.source_entity_uuid,
             "source_entity_type": self.source_entity_type,
             "created_at": self.created_at,
@@ -252,6 +286,10 @@ class OasisProfileGenerator:
                 entity_attributes=entity.attributes
             )
         
+        # Derive cascade attributes from entity type and profile data
+        raw_vibe = profile_data.get("vibe_profile", "Neutral")
+        vibe = raw_vibe if raw_vibe in VIBE_PROFILES else "Neutral"
+
         return OasisAgentProfile(
             user_id=user_id,
             user_name=user_name,
@@ -268,6 +306,9 @@ class OasisProfileGenerator:
             country=profile_data.get("country"),
             profession=profile_data.get("profession"),
             interested_topics=profile_data.get("interested_topics", []),
+            susceptibility_score=max(0.0, min(1.0, float(profile_data.get("susceptibility_score", 0.5)))),
+            reach_score=max(0.0, min(1.0, float(profile_data.get("reach_score", 0.1)))),
+            vibe_profile=vibe,
             source_entity_uuid=entity.uuid,
             source_entity_type=entity_type,
         )
@@ -670,7 +711,14 @@ class OasisProfileGenerator:
     
     def _get_system_prompt(self, is_individual: bool) -> str:
         """获取系统提示词"""
-        base_prompt = "你是社交媒体用户画像生成专家。生成详细、真实的人设用于舆论模拟,最大程度还原已有现实情况。必须返回有效的JSON格式，所有字符串值不能包含未转义的换行符。使用中文。"
+        base_prompt = (
+            "你是社交媒体用户画像生成专家。生成详细、真实的人设用于舆论模拟,最大程度还原已有现实情况。"
+            "必须返回有效的JSON格式，所有字符串值不能包含未转义的换行符。使用中文。"
+            "额外生成以下信息传播模拟字段: "
+            "susceptibility_score (0.0-1.0, 此人有多容易传播未经证实的信息), "
+            "reach_score (0.0-1.0, 此人的社交影响力大小), "
+            "vibe_profile (从以下选项中选一个: Skeptical, Aggressive, Helpful, Opportunistic, Neutral, Contrarian, Amplifier)."
+        )
         return base_prompt
     
     def _build_individual_persona_prompt(
@@ -713,13 +761,18 @@ class OasisProfileGenerator:
 6. country: 国家（使用中文，如"中国"）
 7. profession: 职业
 8. interested_topics: 感兴趣话题数组
+9. susceptibility_score: 信息敏感度 (0.0-1.0)，越高越容易传播未经证实的信息
+10. reach_score: 社交影响力 (0.0-1.0)，越高影响力越大
+11. vibe_profile: 行为风格，必须从以下选项选择: "Skeptical", "Aggressive", "Helpful", "Opportunistic", "Neutral", "Contrarian", "Amplifier"
 
 重要:
 - 所有字段值必须是字符串或数字，不要使用换行符
 - persona必须是一段连贯的文字描述
-- 使用中文（除了gender字段必须用英文male/female）
+- 使用中文（除了gender和vibe_profile字段必须用英文）
 - 内容要与实体信息保持一致
 - age必须是有效的整数，gender必须是"male"或"female"
+- susceptibility_score和reach_score必须是0.0到1.0之间的浮点数
+- vibe_profile必须是上述7个选项之一
 """
 
     def _build_group_persona_prompt(
@@ -762,13 +815,18 @@ class OasisProfileGenerator:
 6. country: 国家（使用中文，如"中国"）
 7. profession: 机构职能描述
 8. interested_topics: 关注领域数组
+9. susceptibility_score: 信息敏感度 (0.0-1.0)，机构账号通常较低（0.1-0.3）
+10. reach_score: 社交影响力 (0.0-1.0)，机构账号通常较高（0.6-0.9）
+11. vibe_profile: 行为风格，必须从以下选项选择: "Skeptical", "Aggressive", "Helpful", "Opportunistic", "Neutral", "Contrarian", "Amplifier"（机构账号通常为Helpful或Neutral）
 
 重要:
 - 所有字段值必须是字符串或数字，不允许null值
 - persona必须是一段连贯的文字描述，不要使用换行符
-- 使用中文（除了gender字段必须用英文"other"）
+- 使用中文（除了gender和vibe_profile字段必须用英文）
 - age必须是整数30，gender必须是字符串"other"
-- 机构账号发言要符合其身份定位"""
+- 机构账号发言要符合其身份定位
+- susceptibility_score和reach_score必须是0.0到1.0之间的浮点数
+- vibe_profile必须是上述7个选项之一"""
     
     def _generate_profile_rule_based(
         self,

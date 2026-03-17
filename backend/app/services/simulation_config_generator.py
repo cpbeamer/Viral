@@ -78,6 +78,12 @@ class AgentActivityConfig:
     # 影响力权重（决定其发言被其他Agent看到的概率）
     influence_weight: float = 1.0
 
+    # --- Viral: cascade-simulation attributes ---
+    susceptibility_score: float = 0.5  # 0.0-1.0: likelihood to amplify unverified claims
+    reach_score: float = 0.1           # 0.0-1.0: normalized follower influence
+    vibe_profile: str = "Neutral"      # Behavioral archetype
+
+
 
 @dataclass  
 class TimeSimulationConfig:
